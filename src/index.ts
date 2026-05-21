@@ -39,6 +39,7 @@ async function run(): Promise<void> {
       const discordWebhook = core.getInput('discord-webhook', { required: true })
       const username = core.getInput('username')
       const avatarURL = core.getInput('avatar-url')
+      const content = core.getInput('content')
       const includeDetails = core.getInput('include-details').trim().toLowerCase() === 'true' || false
       const colorSuccess = parseInt(core.getInput('color-success').trim().replace(/^#/g, ''), 16)
       const colorFailure = parseInt(core.getInput('color-failure').trim().replace(/^#/g, ''), 16)
@@ -53,17 +54,17 @@ async function run(): Promise<void> {
       const octokit = GitHub.getOctokit(githubToken)
       const context = GitHub.context
 
-      octokit.actions.listJobsForWorkflowRun({
+      octokit.rest.actions.listJobsForWorkflowRun({
         owner: context.repo.owner,
         repo: context.repo.repo,
         run_id: parseInt(GITHUB_RUN_ID, 10)
       })
-      .then(response => {
+      .then((response: any) => {
         let workflowJobs = response.data.jobs
 
         let jobData: JobData[] = workflowJobs
-                                  .filter(j => j.status === 'completed')
-                                  .map(j => ({ name: j.name, status: j.conclusion, url: j.html_url }))
+                                  .filter((j: any) => j.status === 'completed')
+                                  .map((j: any) => ({ name: j.name, status: j.conclusion, url: j.html_url }))
 
         let workflowStatus = workflowStatusFromJobs(jobData)
 
@@ -87,6 +88,10 @@ async function run(): Promise<void> {
           ]
         }
 
+        if (content) {
+          (payload as any).content = content
+        }
+
         if (includeDetails) {
           let fields: EmbedField[] = []
 
@@ -101,13 +106,13 @@ async function run(): Promise<void> {
           payload.embeds[0].fields = fields
         }
 
-        executeWebhook(payload, discordWebhook)
+        return executeWebhook(payload, discordWebhook)
       })
-      .catch(error => {
+      .catch((error: any) => {
         core.setFailed(error.message)
       })
     }
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message)
   }
 }

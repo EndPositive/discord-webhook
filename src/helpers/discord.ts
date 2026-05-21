@@ -1,13 +1,19 @@
 import DiscordWebhook from './discordTypes'
-const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 
-function executeWebhook(payload: DiscordWebhook, webhookURL: string): void {
-  let stringifiedPayload = JSON.stringify(payload)
+async function executeWebhook(payload: DiscordWebhook, webhookURL: string): Promise<void> {
+  const stringifiedPayload = JSON.stringify(payload)
 
-  var xhr = new XMLHttpRequest()
-  xhr.open('POST', webhookURL, true)
-  xhr.setRequestHeader('Content-Type', 'application/json')
-  xhr.send(stringifiedPayload)
+  const response = await fetch(webhookURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: stringifiedPayload
+  })
+
+  if (!response.ok) {
+    throw new Error(`Webhook response: ${response.status} ${response.statusText}`)
+  }
 }
 
 export default executeWebhook

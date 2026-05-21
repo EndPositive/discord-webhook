@@ -8,16 +8,16 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "ncc:pack": "ncc build"
+    "package": "ncc build lib/index.js -o dist"
   },
   "devDependencies": {
-    "@types/node": "^14.0.13",
-    "@zeit/ncc": "^0.22.3",
-    "typescript": "^3.9.5"
+    "@types/node": "^25.9.1",
+    "@vercel/ncc": "^0.38.4",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^3.0.0",
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0",
     "xmlhttprequest": "^1.8.0"
   }
 }
